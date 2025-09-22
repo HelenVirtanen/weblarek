@@ -16,11 +16,11 @@ export class Catalog {
     return this.productsList.filter(product => product.id === id)[0];
   }
   
-  saveProductToShow(id: string): void {
+  setSelectedProduct(id: string): void {
     this.selectedProduct = this.productsList.filter(product => product.id === id)[0];
   }
 
-  getProductToShow(): IProduct | null {
+  getSelectedProduct(): IProduct | null {
     return this.selectedProduct;
   }
 }
