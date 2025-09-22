@@ -14,10 +14,17 @@ export interface IProduct {
   category: string;
   price: number | null;
 }
-
+export interface ICatalog {
+    total: number;
+    items: IProduct[];
+}
 export interface IBuyer {
   payment: TPayment;
   email: string;
   phone: string;
   address: string;
+}
+export interface IOrder {
+  buyer: IBuyer;
+  items: IProduct[];
 }

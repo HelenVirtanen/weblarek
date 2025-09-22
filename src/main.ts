@@ -1,9 +1,12 @@
 import './scss/styles.scss';
 import { Catalog } from './components/Models/Catalog';
 import { Cart } from './components/Models/Cart';
-import { Customer } from './components/Models/Customer';
+import { Buyer } from './components/Models/Buyer';
 import { apiProducts } from './utils/data';
 import { IProduct } from './types';
+import { Api } from './components/base/Api';
+import { ApiCommunication } from './components/Models/ApiCommunication';
+
 
 const catalogModel = new Catalog();
 catalogModel.setProducts(apiProducts.items);
@@ -37,21 +40,29 @@ const secondProductFromCatalog = catalogModel.getProducts()[1];
 cartModel.addProductToCart(secondProductFromCatalog);
 console.log("Добавлен второй продукт из каталога:", secondProductFromCatalog);
 
-const customer1 = new Customer();
+const buyer1 = new Buyer();
 
-customer1.setCustomerData({
+buyer1.setBuyerData({
     payment: 'cash',
-            email: 'test@gmail.com',
-            phone: '89112345678',
-            address: 'Test Street, 5, 100500'
+    email: 'test@gmail.com',
+    phone: '89112345678',
+    address: 'Test Street, 5, 100500'
 })
 
-console.log("Добавлен новый покупатель со всеми данными:", customer1.getCustomerData());
+console.log("Добавлен новый покупатель со всеми данными:", buyer1.getBuyerData());
 
-const customer2 = new Customer();
-customer2.setCustomerData({
-            email: 'test@yandex.ru',
-            address: 'Test City, 8, 209036'
+const buyer2 = new Buyer();
+buyer2.setBuyerData({
+    email: 'test@yandex.ru',
+    address: 'Test City, 8, 209036'
 })
 
-console.log("Добавлен новый покупатель с частью данных:", customer2.getCustomerData());
+console.log("Добавлен новый покупатель с частью данных:", buyer2.getBuyerData());
+
+const api = new Api("https://larek-api.nomoreparties.co/api/weblarek");
+const catalog1 = await api.get('/product/');
+console.log("Получен каталог в ответ на запрос к серверу:", catalog1);
+
+const apiCommunication = new ApiCommunication(api);
+const catalog2 = await apiCommunication.getCatalog(); 
+console.log("Получен каталог в ответ на запрос к серверу через апи-коммуникатор:", catalog2);
