@@ -4,6 +4,10 @@ export class Catalog {
   productsList: IProduct[] = [];
   selectedProduct: IProduct | null = null; 
 
+  setProducts(products: IProduct[]): void {
+    this.productsList = products;
+  };
+
   getProducts(): IProduct[] {
     return this.productsList;
   };
