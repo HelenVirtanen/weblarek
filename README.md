@@ -99,7 +99,7 @@ Presenter - презентер содержит основную логику п
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
 #### Данные
-Данные разделены на две основные категории: 
+Данные разделены на две основные сущности: 
 1) о товаре
 2) о заказе покупателя
 
@@ -136,12 +136,12 @@ Presenter - презентер содержит основную логику п
 - total: number
 
 **Body:**
-- payment: 'card' | 'cash'
+- payment: TPayment
 - email: string
 - phone: string
 - address: string
 - total: number
-- items: ProductItem[]
+- items: string[]
 
 #### Модели данных
 
