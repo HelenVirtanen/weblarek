@@ -14,9 +14,9 @@ export interface IProduct {
   category: string;
   price: number | null;
 }
-export interface ICatalog {
-    total: number;
-    items: IProduct[];
+export interface ICatalogResult {
+  total: number;
+  items: IProduct[];
 }
 export interface IBuyer {
   payment: TPayment;
@@ -27,4 +27,13 @@ export interface IBuyer {
 export interface IOrder {
   buyer: IBuyer;
   items: IProduct[];
+}
+
+export interface IOrderResult {
+  payment: string,
+  email: string, 
+  phone: string, 
+  address: string,
+  total: number,
+  items: string[]
 }

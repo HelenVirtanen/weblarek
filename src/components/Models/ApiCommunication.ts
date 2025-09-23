@@ -1,18 +1,16 @@
-import { IApi, IProduct, IOrder, ICatalog } from "../../types";
+import { ICatalogResult, IOrder, IOrderResult } from "../../types";
+import { Api } from "../base/Api";
 
-export class ApiCommunication {
-    protected api: IApi;
-
-    constructor(api: IApi) {
-        this.api = api;
+export class ApiCommunication extends Api{
+    constructor(baseUrl: string, options: RequestInit = {}) {
+        super(baseUrl, options);
     }
 
-    async getCatalog(): Promise<IProduct[]> {
-        const response = await this.api.get<ICatalog>('/product/');
-        return response.items;
+    getCatalog(): Promise<ICatalogResult> {
+        return this.get('/product/');
     }
 
-    async postOrder(order: IOrder): Promise<IOrder>{
-        return this.api.post<IOrder>('/order/', order, 'POST');
+    createOrder(order: IOrder): Promise<IOrderResult>{
+        return this.post('/order/', order);
     }
 }

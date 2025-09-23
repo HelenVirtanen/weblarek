@@ -4,8 +4,8 @@ import { Cart } from './components/Models/Cart';
 import { Buyer } from './components/Models/Buyer';
 import { apiProducts } from './utils/data';
 import { IProduct } from './types';
-import { Api } from './components/base/Api';
 import { ApiCommunication } from './components/Models/ApiCommunication';
+import { API_URL, CDN_URL } from './utils/constants';
 
 
 const catalogModel = new Catalog();
@@ -59,10 +59,23 @@ buyer2.setBuyerData({
 
 console.log("Добавлен новый покупатель с частью данных:", buyer2.getBuyerData());
 
-const api = new Api("https://larek-api.nomoreparties.co/api/weblarek");
-const catalog1 = await api.get('/product/');
-console.log("Получен каталог в ответ на запрос к серверу:", catalog1);
+const apiCommunication = new ApiCommunication(API_URL);
 
-const apiCommunication = new ApiCommunication(api);
-const catalog2 = await apiCommunication.getCatalog(); 
-console.log("Получен каталог в ответ на запрос к серверу через апи-коммуникатор:", catalog2);
+try {
+    const catalog = await apiCommunication.getCatalog();
+
+    console.log("Получен каталог с сервера через апи-коммуникатор:", catalog);
+} catch (error) {
+    console.error("Ошибка получения каталога:", error);
+}
+
+try {
+    const catalog = await apiCommunication.getCatalog();
+    const catalogWithFullPathImages = catalog.items.map(product => ({
+    ...product, image: `${CDN_URL}/${product.image}`}));
+    console.log("Сформированы полные пути изображений товаров в каталоге", catalogWithFullPathImages);
+    catalogModel.setProducts(catalogWithFullPathImages);
+    console.log("Сформирован каталог с полными путями к изображениям товаров", catalogModel);
+} catch (error) {
+    console.error("Ошибка формирования полных путей изображений товаров в каталоге", error);
+}
