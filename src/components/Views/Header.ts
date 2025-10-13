@@ -1,6 +1,6 @@
-import { Component } from '../../base/Component';
-import { ensureElement } from '../../../utils/utils';
-import { IEvents } from '../../base/Events';
+import { Component } from '../base/Component';
+import { ensureElement } from '../../utils/utils';
+import { IEvents } from '../base/Events';
 
 interface CartCount {
     count: number;
