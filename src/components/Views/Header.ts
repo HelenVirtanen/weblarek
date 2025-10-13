@@ -7,8 +7,8 @@ interface CartCount {
 };
 
 export class Header extends Component<CartCount> {
-    cartCounter: HTMLElement;
-    cartButton: HTMLButtonElement;
+    protected cartCounter: HTMLElement;
+    protected cartButton: HTMLButtonElement;
 
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);

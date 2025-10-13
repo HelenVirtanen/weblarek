@@ -6,7 +6,7 @@ interface ModalContent {
     content: HTMLElement;
 };
 
-export class Modal extends Component<ModalContent> {
+export abstract class Modal extends Component<ModalContent> {
     protected closeButton: HTMLButtonElement;
     protected modalElement: HTMLElement;
     protected page: HTMLElement;
