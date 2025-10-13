@@ -3,7 +3,7 @@ import { ensureElement } from "../../../utils/utils";
 import { Component } from "../../base/Component";
 
 export interface ICard extends Partial<IProduct> {
-    index: number;
+    index?: number;
 };
 
 export abstract class Card<T extends ICard> extends Component <T> {
