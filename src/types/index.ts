@@ -41,3 +41,6 @@ export interface IOrderResult {
 export interface ICardActions {
     onClick?: (event: MouseEvent) => void;
 }
+export interface IBasketRemoveActions {
+    onRemove?: (event: MouseEvent) => void;
+}
