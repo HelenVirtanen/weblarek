@@ -218,8 +218,8 @@ P.S. В интерфейсе IOrder и IOrderResult пока указаны вр
 * ModalContactsForm - форма с контактными данными
 * ModalSuccessOrdered - подтверждение успешного заказа
 
-2) Catalog - Каталог товаров
-3) CartCountInHeader - Корзина с счетчиком товаров (в хедере)
+2) Gallery - Каталог товаров
+3) Header - Корзина с счетчиком товаров (в хедере)
 4) ProductInCart - Карточка товара в корзине (как пункт списка)
 5) ProductInCatalog - Карточка товара в каталоге
 
