@@ -20,6 +20,12 @@ export class Modal extends Component<ModalContent> {
         this.page = ensureElement<HTMLElement>('.page__wrapper', this.container);
 
         this.closeButton.addEventListener('click', () => { this.close() });
+
+        this.container.addEventListener('click', (event) => {
+            if (event.target === this.container) {
+                this.close();
+            }
+        });
     };
 
     set content(elem: HTMLElement) {
