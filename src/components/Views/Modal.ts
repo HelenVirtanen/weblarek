@@ -1,12 +1,12 @@
-import { Component } from '../../base/Component';
-import { ensureElement } from '../../../utils/utils';
-import { IEvents } from '../../base/Events';
+import { Component } from '../base/Component';
+import { ensureElement } from '../../utils/utils';
+import { IEvents } from '../base/Events';
 
 interface ModalContent {
     content: HTMLElement;
 };
 
-export abstract class Modal extends Component<ModalContent> {
+export class Modal extends Component<ModalContent> {
     protected closeButton: HTMLButtonElement;
     protected modalElement: HTMLElement;
     protected page: HTMLElement;
