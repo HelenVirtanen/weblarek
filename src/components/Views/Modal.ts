@@ -17,16 +17,26 @@ export class Modal extends Component<ModalContent> {
 
         this.closeButton = ensureElement<HTMLButtonElement>('.modal__close', this.container);
         this.modalElement = ensureElement<HTMLElement>('.modal__content', this.container);
-        this.page = ensureElement<HTMLElement>('.page-wrapper', this.container);
+        this.page = ensureElement<HTMLElement>('.page__wrapper', this.container);
 
-        this.closeButton.addEventListener('click', () => {
-            this.container.classList.remove('modal_active');
-            this.isOpen = false;
-            this.events.emit('modal:close');
-        });
+        this.closeButton.addEventListener('click', () => { this.close() });
     };
 
     set content(elem: HTMLElement) {
         this.modalElement.replaceChildren(elem); 
     }
+
+    open(): void {
+        this.page.classList.add('page__wrapper_locked');
+        this.container.classList.add('modal_active');
+        this.isOpen = true;
+        this.events.emit('modal:open');
+    };
+
+    close(): void {
+        this.page.classList.remove('page__wrapper_locked');
+        this.container.classList.remove('modal_active');
+        this.isOpen = false;
+        this.events.emit('modal:close');
+    };
 };
