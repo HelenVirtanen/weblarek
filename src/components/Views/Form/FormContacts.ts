@@ -2,7 +2,7 @@ import { ensureElement } from '../../../utils/utils';
 import { IFormActions, IContactsActions } from '../../../types/index';
 import { Form } from './Form';
 
-export interface IContactsFormActions extends IFormActions, IContactsActions {};
+export interface IFormContactsActions extends IFormActions, IContactsActions {};
 
 export interface IContacts {
     email: string;
@@ -12,7 +12,7 @@ export class FormContacts extends Form {
     protected emailInput: HTMLInputElement;
     protected phoneInput: HTMLInputElement;
 
-    constructor(container: HTMLElement, actions?: IContactsFormActions) {
+    constructor(container: HTMLElement, actions?: IFormContactsActions) {
         super(container);
 
         this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.container);

@@ -56,3 +56,8 @@ export interface IContactsActions {
   onEmailInput?: (email: string) => void;
   onPhoneInput?: (phone: string) => void;
 }
+
+export interface IOrderActions {
+    onPaymentSelect?: (payment: TPayment) => void;
+    onAddressInput?: (address: string) => void;
+};
