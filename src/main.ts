@@ -75,6 +75,18 @@ events.on('card:select', (product: IProduct) => {
     modal.open(); 
 })
 
+events.on('card:add-product', (product: IProduct) => {
+    cartModel.addProductToCart(product);
+    events.emit('cart-counter:changed');
+    events.emit('card:select', product);
+})
+
+events.on('card:remove-product', (product: IProduct) => {
+    cartModel.removeProductFromCart(product);
+    events.emit('cart-counter:changed');
+    events.emit('card:select', product);
+})
+
 events.on('cart-counter:changed', () => {
     header.counter = cartModel.getTotalCartProducts();
 });
@@ -86,6 +98,5 @@ apiCommunication.getCatalog()
     .then(productsWithImages => {
         catalogModel.setProducts(productsWithImages);
         events.emit('catalog:changed');
-        events.emit('cart-counter:changed');
     })
     .catch(error => console.error('Ошибка загрузки каталога', error));
