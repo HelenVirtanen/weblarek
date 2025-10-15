@@ -1,4 +1,4 @@
-import { ICatalogResult, IOrder, IOrderResult } from "../../types";
+import { ICatalogResult, IOrderRequest, IOrderResult } from "../../types";
 import { Api } from "../base/Api";
 
 export class ApiCommunication extends Api{
@@ -10,7 +10,7 @@ export class ApiCommunication extends Api{
         return this.get('/product/');
     }
 
-    createOrder(order: IOrder): Promise<IOrderResult>{
-        return this.post('/order/', order);
+    createOrder(order: IOrderRequest): Promise<IOrderResult>{
+        return this.post('/order/', order).then((data => data as IOrderResult));
     }
 }

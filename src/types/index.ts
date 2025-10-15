@@ -24,20 +24,14 @@ export interface IBuyer {
   phone: string;
   address: string;
 }
-export interface IOrder {
-  buyer: IBuyer;
-  items: IProduct[];
+export interface IOrderRequest extends IBuyer{
+  total: number;
+  items: string[];
 }
-
 export interface IOrderResult {
-  payment: string,
-  email: string, 
-  phone: string, 
-  address: string,
-  total: number,
-  items: string[]
+  id: string;
+  total: number;
 }
-
 export interface ICardActions {
     onClick?: (event: MouseEvent) => void;
 }
@@ -47,16 +41,13 @@ export interface IBasketRemoveActions {
 export interface IBasketOrderActions {
     onBuy?: (event: MouseEvent) => void;
 }
-
 export interface IFormActions {
     onSubmit?: (event: SubmitEvent) => void;
 }
-
 export interface IContactsActions {
   onEmailInput?: (email: string) => void;
   onPhoneInput?: (phone: string) => void;
 }
-
 export interface IOrderActions {
     onPaymentSelect?: (payment: TPayment) => void;
     onAddressInput?: (address: string) => void;
