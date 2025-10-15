@@ -13,7 +13,7 @@ import { IProduct } from './types';
 import { CardPreview } from './components/Views/Card/CardPreview';
 import { Modal } from './components/Views/Modal';
 import { Basket } from './components/Views/Basket';
-
+import { CardBasket } from './components/Views/Card/CardBasket';
 
 const events = new EventEmitter();
 
@@ -37,9 +37,9 @@ const gallery = new Gallery(ensureElement<HTMLElement>('.page__wrapper'));
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const modal = new Modal(ensureElement<HTMLElement>('.modal'), events);
-const basketViewTemplate = ensureElement<HTMLTemplateElement>('#basket');
+const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketButton = ensureElement<HTMLButtonElement>('.header__basket');
-
+const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 
 basketButton.addEventListener('click', () => {
     events.emit('cart:open');
@@ -100,11 +100,30 @@ events.on('cart-counter:changed', () => {
 });
 
 events.on('cart:open', () => {
-    const basket = new Basket(cloneTemplate(basketViewTemplate), {
+    const basket = new Basket(cloneTemplate(basketTemplate), {
         onBuy: () => {
             events.emit('cart:order');
         },
     });
+
+    const basketList = cartModel.getCartProducts();
+
+    const basketItems = basketList.map((item, index) => {
+        const basketProduct = new CardBasket(cloneTemplate(cardBasketTemplate), {
+            onRemove: () => {
+                events.emit('card:remove-product', item);
+            }
+        })
+
+        basketProduct.index = index + 1;
+        basketProduct.title = item.title;
+        basketProduct.price = item.price;
+
+        return basketProduct.render(item);
+    })
+
+    basket.basket = basketItems;
+    basket.total = cartModel.getTotalCartPrice();
 
     modal.render({ content: basket.render()});
     modal.open();
