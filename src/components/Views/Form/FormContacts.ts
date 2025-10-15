@@ -22,12 +22,14 @@ export class FormContacts extends Form {
             if (actions?.onEmailInput) {
                 actions.onEmailInput(this.emailInput.value);
             };
+            this.isContactsValid();
         });
 
         this.phoneInput.addEventListener('input', () => {
             if (actions?.onPhoneInput) {
                 actions.onPhoneInput(this.phoneInput.value);
             };
+            this.isContactsValid();
         });
     };
 
@@ -45,6 +47,18 @@ export class FormContacts extends Form {
 
     get phone(): string {
         return this.phoneInput.value;
+    }
+
+    isContactsValid(): void {
+        const error: {[key: string]: string} = {};
+        if (!this.email || !this.email.includes('@')) {
+            error.email = 'Введите корректный email';
+        }
+        
+        if (!this.phone || this.phone.trim() === '') {
+            error.phone = 'Введите телефон';
+        }
+        this.checkErrors(error);
     }
 
     get contactsData(): IContacts {

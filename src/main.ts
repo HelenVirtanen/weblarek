@@ -15,6 +15,7 @@ import { Modal } from './components/Views/Modal';
 import { Basket } from './components/Views/Basket';
 import { CardBasket } from './components/Views/Card/CardBasket';
 import { FormOrder } from './components/Views/Form/FormOrder';
+import { FormContacts } from './components/Views/Form/FormContacts';
 
 const events = new EventEmitter();
 
@@ -33,6 +34,7 @@ const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketButton = ensureElement<HTMLButtonElement>('.header__basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const formOrderTemplate = ensureElement<HTMLTemplateElement>('#order');
+const formContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 
 basketButton.addEventListener('click', () => {
     events.emit('cart:open');
@@ -131,10 +133,8 @@ events.on('cart:order', () => {
             buyerModel.setBuyerData({
                 payment: orderDetails.payment,
                 address: orderDetails.address,
-                email: buyerModel?.getBuyerData()?.email || 'test@email.com',
-                phone: buyerModel?.getBuyerData()?.phone || '89112345678',
             });
-            events.emit('order-details:submit', orderDetails);
+            events.emit('cart:contacts', orderDetails);
         },
 
         onPaymentSelect: (payment) => {
@@ -152,8 +152,28 @@ events.on('cart:order', () => {
     modal.open();
 })
 
-events.on('order-details:submit', () => {
-    console.log('следующее окно');
+events.on('cart:contacts', () => {
+    const contacts = new FormContacts(cloneTemplate(formContactsTemplate), {
+        onSubmit: (event) => {
+            event.preventDefault();
+            const contactsDetails = contacts.contactsData;
+            buyerModel.setBuyerData({
+                email: contactsDetails.email,
+                phone: contactsDetails.phone,
+            });
+            events.emit('order:submit', contactsDetails);
+        },
+
+        onEmailInput: (email) => {
+            buyerModel.setBuyerData({email});
+        },
+        onPhoneInput: (phone) => {
+            buyerModel.setBuyerData({phone});
+        },
+    });
+
+    modal.render({ content: contacts.render() });
+    modal.open();
 })
 
 apiCommunication.getCatalog()

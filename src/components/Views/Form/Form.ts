@@ -28,10 +28,6 @@ export abstract class Form extends Component<{}> {
         this.submitButton.disabled = value;
     }
 
-    set valid(value: boolean) {
-        this.submitButton.disabled = !value;
-    };
-
     removeErrors() {
         this.errorsInfo.textContent = '';
     }
@@ -40,10 +36,10 @@ export abstract class Form extends Component<{}> {
         const errorsList = Object.values(errors).filter(Boolean);
         if (errorsList.length > 0) {
             this.errors = errorsList.join(', ');
-            this.valid = false;
+            this.submitButton.disabled = true; 
         } else {
             this.removeErrors();
-            this.valid = true;
+            this.submitButton.disabled = false; 
         }
     }
 };
