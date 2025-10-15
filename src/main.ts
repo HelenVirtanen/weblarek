@@ -9,6 +9,9 @@ import { ensureElement, cloneTemplate } from './utils/utils';
 import { Gallery } from './components/Views/Gallery';
 import { Header } from './components/Views/Header';
 import { CardCatalog } from './components/Views/Card/CardCatalog';
+import { IProduct } from './types';
+import { CardPreview } from './components/Views/Card/CardPreview';
+import { Modal } from './components/Views/Modal';
 
 
 const events = new EventEmitter();
@@ -31,6 +34,8 @@ const apiCommunication = new ApiCommunication(API_URL);
 const header = new Header(ensureElement<HTMLElement>('.header'), events);
 const gallery = new Gallery(ensureElement<HTMLElement>('.page__wrapper'));
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
+const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
+const modal = new Modal(ensureElement<HTMLElement>('.modal'), events);
 
 events.on('catalog:changed', () => {
     const itemCards = catalogModel.getProducts().map((item) => {
@@ -43,6 +48,32 @@ events.on('catalog:changed', () => {
     });
     gallery.render({ catalog: itemCards })
 });
+
+events.on('card:select', (product: IProduct) => {
+    catalogModel.setSelectedProduct(product.id);
+    const productInCart = cartModel.isProductInCart(product.id);
+    
+    const card = new CardPreview(cloneTemplate(cardPreviewTemplate), {
+        onClick: () => {
+            if (productInCart) {
+                events.emit('card:remove-product', product);
+            } else {
+                events.emit('card:add-product', product);
+            }
+        },
+    });
+
+    if (product.price === null) { 
+        card.buttonText = 'Недоступно'; 
+        card.buttonDisabled = true; 
+    } else { 
+        card.buttonText = productInCart ? 'Удалить из корзины' : 'Купить'; 
+        card.buttonDisabled = false; 
+    }
+
+    modal.render({ content: card.render(product) });
+    modal.open(); 
+})
 
 events.on('cart-counter:changed', () => {
     header.counter = cartModel.getTotalCartProducts();
