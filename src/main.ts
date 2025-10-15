@@ -9,13 +9,14 @@ import { ensureElement, cloneTemplate } from './utils/utils';
 import { Gallery } from './components/Views/Gallery';
 import { Header } from './components/Views/Header';
 import { CardCatalog } from './components/Views/Card/CardCatalog';
-import { IProduct } from './types';
+import { IOrderRequest, IOrderResult, IProduct } from './types';
 import { CardPreview } from './components/Views/Card/CardPreview';
 import { Modal } from './components/Views/Modal';
 import { Basket } from './components/Views/Basket';
 import { CardBasket } from './components/Views/Card/CardBasket';
 import { FormOrder } from './components/Views/Form/FormOrder';
 import { FormContacts } from './components/Views/Form/FormContacts';
+import { Success } from './components/Views/Success';
 
 const events = new EventEmitter();
 
@@ -35,6 +36,7 @@ const basketButton = ensureElement<HTMLButtonElement>('.header__basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const formOrderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const formContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
 basketButton.addEventListener('click', () => {
     events.emit('cart:open');
@@ -88,6 +90,7 @@ events.on('card:remove-product', (product: IProduct) => {
     cartModel.removeProductFromCart(product);
     events.emit('cart-counter:changed');
     events.emit('card:select', product);
+    modal.close();
 })
 
 events.on('cart-counter:changed', () => {
@@ -138,10 +141,10 @@ events.on('cart:order', () => {
         },
 
         onPaymentSelect: (payment) => {
-            buyerModel.setBuyerData({payment});
+            buyerModel.setBuyerData({ payment });
         },
         onAddressInput: (address) => {
-            buyerModel.setBuyerData({address});
+            buyerModel.setBuyerData({ address });
         },
     });
 
@@ -154,25 +157,58 @@ events.on('cart:order', () => {
 
 events.on('cart:contacts', () => {
     const contacts = new FormContacts(cloneTemplate(formContactsTemplate), {
-        onSubmit: (event) => {
+        onSubmit: async (event) => {
             event.preventDefault();
             const contactsDetails = contacts.contactsData;
             buyerModel.setBuyerData({
                 email: contactsDetails.email,
                 phone: contactsDetails.phone,
             });
-            events.emit('order:submit', contactsDetails);
+
+            const orderData: IOrderRequest = {
+                payment: buyerModel.getBuyerData()?.payment ?? 'card',
+                email: contactsDetails.email,
+                phone: contactsDetails.phone,
+                address: buyerModel.getBuyerData()?.address ?? 'test',
+                total: cartModel.getTotalCartPrice(),
+                items: cartModel.getCartProducts().map(p => p.id),
+            };
+
+
+            try {
+                const result = await apiCommunication.createOrder(orderData);
+                console.log('RESULT', result);
+                console.log('Order success:', result);
+                events.emit('cart:success', result);
+            } catch (err) {
+                console.error(err);
+            }
         },
 
         onEmailInput: (email) => {
-            buyerModel.setBuyerData({email});
+            buyerModel.setBuyerData({ email });
         },
         onPhoneInput: (phone) => {
-            buyerModel.setBuyerData({phone});
+            buyerModel.setBuyerData({ phone });
         },
     });
 
     modal.render({ content: contacts.render() });
+    modal.open();
+})
+
+events.on('cart:success', (result: IOrderResult) => {
+    const success = new Success(cloneTemplate(successTemplate), {
+        onOrdered: () => {
+            modal.close();
+            cartModel.clearCart();
+            buyerModel.clearBuyerData();
+        }
+    })
+;
+    success.total = result.total ?? cartModel.getTotalCartPrice();
+    
+    modal.render({ content: success.render() });
     modal.open();
 })
 
