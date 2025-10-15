@@ -51,3 +51,8 @@ export interface IBasketOrderActions {
 export interface IFormActions {
     onSubmit?: (event: SubmitEvent) => void;
 }
+
+export interface IContactsActions {
+  onEmailInput?: (email: string) => void;
+  onPhoneInput?: (phone: string) => void;
+}

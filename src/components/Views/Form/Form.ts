@@ -27,4 +27,12 @@ export abstract class Form extends Component<{}> {
     set submitButtonDisabled(value: boolean) {
         this.submitButton.disabled = value;
     }
+
+    set valid(value: boolean) {
+        this.submitButton.disabled = !value;
+    };
+
+    removeErrors() {
+        this.errorsInfo.textContent = '';
+    }
 };
