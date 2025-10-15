@@ -214,7 +214,7 @@ events.on('cart:success', (result: IOrderResult) => {
 
 apiCommunication.getCatalog()
     .then(catalog => catalog.items.map(product => (
-        { ...product, image: `${CDN_URL}/${product.image}` }
+        { ...product, image: `${CDN_URL}/${product.image}`.replace('svg', 'png') }
     )))
     .then(productsWithImages => {
         catalogModel.setProducts(productsWithImages);
