@@ -35,4 +35,15 @@ export abstract class Form extends Component<{}> {
     removeErrors() {
         this.errorsInfo.textContent = '';
     }
+
+    checkErrors(errors: {[key: string]: string}): void {
+        const errorsList = Object.values(errors).filter(Boolean);
+        if (errorsList.length > 0) {
+            this.errors = errorsList.join(', ');
+            this.valid = false;
+        } else {
+            this.removeErrors();
+            this.valid = true;
+        }
+    }
 };

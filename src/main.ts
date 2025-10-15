@@ -14,21 +14,13 @@ import { CardPreview } from './components/Views/Card/CardPreview';
 import { Modal } from './components/Views/Modal';
 import { Basket } from './components/Views/Basket';
 import { CardBasket } from './components/Views/Card/CardBasket';
+import { FormOrder } from './components/Views/Form/FormOrder';
 
 const events = new EventEmitter();
 
 const catalogModel = new Catalog();
 const cartModel = new Cart();
 const buyerModel = new Buyer();
-
-buyerModel.setBuyerData({
-    payment: 'cash',
-    email: 'test@gmail.com',
-    phone: '89112345678',
-    address: 'Test Street, 5, 100500'
-})
-
-console.log("Добавлен новый покупатель со всеми данными:", buyerModel.getBuyerData());
 
 const apiCommunication = new ApiCommunication(API_URL);
 
@@ -40,6 +32,7 @@ const modal = new Modal(ensureElement<HTMLElement>('.modal'), events);
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketButton = ensureElement<HTMLButtonElement>('.header__basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
+const formOrderTemplate = ensureElement<HTMLTemplateElement>('#order');
 
 basketButton.addEventListener('click', () => {
     events.emit('cart:open');
@@ -128,6 +121,39 @@ events.on('cart:open', () => {
 
     modal.render({ content: basket.render()});
     modal.open();
+})
+
+events.on('cart:order', () => {
+    const order = new FormOrder(cloneTemplate(formOrderTemplate), {
+        onSubmit: (event) => {
+            event.preventDefault();
+            const orderDetails = order.orderData;
+            buyerModel.setBuyerData({
+                payment: orderDetails.payment,
+                address: orderDetails.address,
+                email: buyerModel?.getBuyerData()?.email || 'test@email.com',
+                phone: buyerModel?.getBuyerData()?.phone || '89112345678',
+            });
+            events.emit('order-details:submit', orderDetails);
+        },
+
+        onPaymentSelect: (payment) => {
+            buyerModel.setBuyerData({payment});
+        },
+        onAddressInput: (address) => {
+            buyerModel.setBuyerData({address});
+        },
+    });
+
+    order.payment = buyerModel.getBuyerData()?.payment || 'card';
+    order.address = buyerModel.getBuyerData()?.address || '';
+
+    modal.render({ content: order.render() });
+    modal.open();
+})
+
+events.on('order-details:submit', () => {
+    console.log('следующее окно');
 })
 
 apiCommunication.getCatalog()
