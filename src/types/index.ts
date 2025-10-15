@@ -52,3 +52,7 @@ export interface IOrderActions {
     onPaymentSelect?: (payment: TPayment) => void;
     onAddressInput?: (address: string) => void;
 };
+
+export interface ISuccessActions {
+  onOrdered?: () => void; 
+}
