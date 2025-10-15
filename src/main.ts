@@ -6,7 +6,10 @@ import { apiProducts } from './utils/data';
 import { IProduct } from './types';
 import { ApiCommunication } from './components/Models/ApiCommunication';
 import { API_URL, CDN_URL } from './utils/constants';
-
+import { EventEmitter } from './components/base/Events';
+import { ensureElement, cloneTemplate } from './utils/utils';
+import { Gallery } from './components/Views/Gallery';
+import { CardCatalog } from './components/Views/Card/CardCatalog';
 
 const catalogModel = new Catalog();
 catalogModel.setProducts(apiProducts.items);
@@ -79,3 +82,29 @@ try {
 } catch (error) {
     console.error("Ошибка формирования полных путей изображений товаров в каталоге", error);
 }
+
+const events = new EventEmitter();
+const gallery = new Gallery(ensureElement<HTMLElement>('.page__wrapper'));
+const сardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
+
+events.on('catalog:changed', () => {
+    const itemCards = catalogModel.getProducts().map((item) => {
+        const card = new CardCatalog(cloneTemplate(сardCatalogTemplate), {
+            onClick: () => {
+                events.emit('card:select', item);
+            },
+        });
+        return card.render(item);
+    });
+    gallery.render({ catalog: itemCards })
+});
+
+apiCommunication.getCatalog()
+    .then(catalog => catalog.items.map(product => (
+        { ...product, image: `${CDN_URL}/${product.image}` }
+    )))
+    .then(productsWithImages => {
+        catalogModel.setProducts(productsWithImages);
+        events.emit('catalog:changed');
+    })
+    .catch(error => console.error('Ошибка загрузки каталога', error));
