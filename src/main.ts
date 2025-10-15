@@ -112,6 +112,7 @@ events.on('cart:open', () => {
         const basketProduct = new CardBasket(cloneTemplate(cardBasketTemplate), {
             onRemove: () => {
                 events.emit('card:remove-product', item);
+                events.emit('cart:open');
             }
         })
 
