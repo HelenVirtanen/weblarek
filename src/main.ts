@@ -177,8 +177,6 @@ events.on('cart:contacts', () => {
 
             try {
                 const result = await apiCommunication.createOrder(orderData);
-                console.log('RESULT', result);
-                console.log('Order success:', result);
                 events.emit('cart:success', result);
             } catch (err) {
                 console.error(err);
