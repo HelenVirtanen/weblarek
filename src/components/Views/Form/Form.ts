@@ -8,7 +8,7 @@ export abstract class Form extends Component<{}> {
 
     constructor(container: HTMLElement, actions?: IFormActions) {
         super(container);
-
+        
         this.errorsInfo = ensureElement<HTMLElement>('.form__errors', this.container);
         this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);
 

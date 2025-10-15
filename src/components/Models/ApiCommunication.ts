@@ -11,6 +11,6 @@ export class ApiCommunication extends Api{
     }
 
     createOrder(order: IOrderRequest): Promise<IOrderResult>{
-        return this.post('/order/', order).then((data => data as IOrderResult));
+        return this.post('/order', order).then((data => data as IOrderResult));
     }
 }
