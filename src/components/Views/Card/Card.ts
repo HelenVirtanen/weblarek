@@ -9,6 +9,7 @@ export interface ICard extends Partial<IProduct> {
 export abstract class Card<T extends ICard> extends Component <T> {
     protected cardTitle: HTMLElement;
     protected cardPrice: HTMLElement;
+    protected data?: T; 
 
     constructor(container: HTMLElement) {
         super(container);

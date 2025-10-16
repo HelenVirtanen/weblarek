@@ -32,23 +32,14 @@ const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const modal = new Modal(ensureElement<HTMLElement>('.modal'), events);
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
-const basketButton = ensureElement<HTMLButtonElement>('.header__basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const formOrderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const formContactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-basketButton.addEventListener('click', () => {
-    events.emit('cart:open');
-});
-
 events.on('catalog:changed', () => {
     const itemCards = catalogModel.getProducts().map((item) => {
-        const card = new CardCatalog(cloneTemplate(cardCatalogTemplate), {
-            onClick: () => {
-                events.emit('card:select', item);
-            },
-        });
+        const card = new CardCatalog(cloneTemplate(cardCatalogTemplate), events);
         return card.render(item);
     });
     gallery.render({ catalog: itemCards })

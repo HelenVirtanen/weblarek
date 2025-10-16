@@ -32,9 +32,6 @@ export interface IOrderResult {
   id: string;
   total: number;
 }
-export interface ICardActions {
-    onClick?: (event: MouseEvent) => void;
-}
 export interface IBasketRemoveActions {
     onRemove?: (event: MouseEvent) => void;
 }
