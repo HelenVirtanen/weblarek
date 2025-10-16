@@ -50,7 +50,7 @@ events.on('card:select', (product: IProduct) => {
     catalogModel.setSelectedProduct(product.id);
     const productInCart = cartModel.isProductInCart(product.id);
     const card = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
-
+    
     modal.render({ content: card.render(product, productInCart) });
     modal.open(); 
 })
