@@ -13,7 +13,7 @@ export class FormContacts extends Form {
     protected phoneInput: HTMLInputElement;
 
     constructor(container: HTMLElement, actions?: IFormContactsActions) {
-        super(container);
+        super(container, actions);
 
         this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.container);
         this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.container);

@@ -9,7 +9,7 @@ import { ensureElement, cloneTemplate } from './utils/utils';
 import { Gallery } from './components/Views/Gallery';
 import { Header } from './components/Views/Header';
 import { CardCatalog } from './components/Views/Card/CardCatalog';
-import { IOrderRequest, IOrderResult, IProduct } from './types';
+import { IOrderRequest, IProduct } from './types';
 import { CardPreview } from './components/Views/Card/CardPreview';
 import { Modal } from './components/Views/Modal';
 import { Basket } from './components/Views/Basket';
@@ -137,7 +137,7 @@ events.on('cart:order', () => {
                 payment: orderDetails.payment,
                 address: orderDetails.address,
             });
-            events.emit('cart:contacts', orderDetails);
+            events.emit('cart:contacts');
         },
 
         onPaymentSelect: (payment) => {
@@ -157,7 +157,7 @@ events.on('cart:order', () => {
 
 events.on('cart:contacts', () => {
     const contacts = new FormContacts(cloneTemplate(formContactsTemplate), {
-        onSubmit: async (event) => {
+        onSubmit: (event) => {
             event.preventDefault();
             const contactsDetails = contacts.contactsData;
             buyerModel.setBuyerData({
@@ -173,10 +173,11 @@ events.on('cart:contacts', () => {
                 total: cartModel.getTotalCartPrice(),
                 items: cartModel.getCartProducts().map(p => p.id),
             };
-
+            
+            console.log('Отправляем заказ на сервер:', orderData);
 
             try {
-                const result = await apiCommunication.createOrder(orderData);
+                const result = apiCommunication.createOrder(orderData);
                 events.emit('cart:success', result);
             } catch (err) {
                 console.error(err);
@@ -195,7 +196,7 @@ events.on('cart:contacts', () => {
     modal.open();
 })
 
-events.on('cart:success', (result: IOrderResult) => {
+events.on('cart:success', () => {
     const success = new Success(cloneTemplate(successTemplate), {
         onOrdered: () => {
             modal.close();
@@ -204,7 +205,7 @@ events.on('cart:success', (result: IOrderResult) => {
         }
     })
 ;
-    success.total = result.total ?? cartModel.getTotalCartPrice();
+    success.total = cartModel.getTotalCartPrice();
     
     modal.render({ content: success.render() });
     modal.open();
