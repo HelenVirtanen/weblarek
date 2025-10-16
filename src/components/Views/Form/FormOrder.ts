@@ -1,6 +1,7 @@
 import { TPayment, IFormActions, IOrderActions } from "../../../types";
 import { ensureElement } from "../../../utils/utils";
 import { Form } from "./Form";
+import { IEvents } from "../../base/Events";
 
 export interface IFormOrderActions extends IFormActions, IOrderActions {};
 export interface IOrderData {
@@ -13,7 +14,7 @@ export class FormOrder extends Form {
     protected paymentCash: HTMLButtonElement;
     protected addressInput: HTMLInputElement;
 
-    constructor(container: HTMLElement, actions?: IFormOrderActions) {
+    constructor(container: HTMLElement, actions?: IFormOrderActions, protected events?: IEvents) {
         super(container, actions);
 
         this.paymentCard = ensureElement<HTMLButtonElement>('button[name="card"]', this.container);
@@ -39,6 +40,10 @@ export class FormOrder extends Form {
                 actions.onAddressInput(this.addressInput.value);
             };
             this.isAddressValid();
+        });
+
+        this.submitButton.addEventListener('click', () => {
+            this.events?.emit('cart:contacts');
         });
     };
 

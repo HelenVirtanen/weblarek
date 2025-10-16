@@ -99,16 +99,13 @@ events.on('cart:order', () => {
                 payment: orderDetails.payment,
                 address: orderDetails.address,
             });
-            events.emit('cart:contacts');
         },
 
-        onPaymentSelect: (payment) => {
-            buyerModel.setBuyerData({ payment });
-        },
-        onAddressInput: (address) => {
-            buyerModel.setBuyerData({ address });
-        },
-    });
+        onPaymentSelect: (payment) => buyerModel.setBuyerData({ payment }),
+        onAddressInput: (address) => buyerModel.setBuyerData({ address }),
+        }, 
+        events
+    );
 
     order.payment = buyerModel.getBuyerData()?.payment || 'card';
     order.address = buyerModel.getBuyerData()?.address || '';
@@ -134,8 +131,6 @@ events.on('cart:contacts', () => {
                 total: cartModel.getTotalCartPrice(),
                 items: cartModel.getCartProducts().map(p => p.id),
             };
-            
-            console.log('Отправляем заказ на сервер:', orderData);
 
             try {
                 const result = apiCommunication.createOrder(orderData);
@@ -165,8 +160,8 @@ events.on('cart:success', () => {
             header.counter = cartModel.getTotalCartProducts();
             buyerModel.clearBuyerData();
         }
-    })
-;
+    });
+
     success.total = cartModel.getTotalCartPrice();
     
     modal.render({ content: success.render() });
