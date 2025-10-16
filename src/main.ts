@@ -28,9 +28,10 @@ const apiCommunication = new ApiCommunication(API_URL);
 
 const header = new Header(ensureElement<HTMLElement>('.header'), events);
 const gallery = new Gallery(ensureElement<HTMLElement>('.page__wrapper'));
+const modal = new Modal(ensureElement<HTMLElement>('.modal'), events);
+
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
-const modal = new Modal(ensureElement<HTMLElement>('.modal'), events);
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 const formOrderTemplate = ensureElement<HTMLTemplateElement>('#order');
@@ -48,40 +49,20 @@ events.on('catalog:changed', () => {
 events.on('card:select', (product: IProduct) => {
     catalogModel.setSelectedProduct(product.id);
     const productInCart = cartModel.isProductInCart(product.id);
-    
-    const card = new CardPreview(cloneTemplate(cardPreviewTemplate), {
-        onClick: () => {
-            if (productInCart) {
-                events.emit('card:remove-product', product);
-            } else {
-                events.emit('card:add-product', product);
-            }
-        },
-    });
+    const card = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
 
-    if (product.price === null) { 
-        card.buttonText = 'Недоступно'; 
-        card.buttonDisabled = true; 
-    } else { 
-        card.buttonText = productInCart ? 'Удалить из корзины' : 'Купить'; 
-        card.buttonDisabled = false; 
-    }
-
-    modal.render({ content: card.render(product) });
+    modal.render({ content: card.render(product, productInCart) });
     modal.open(); 
 })
 
 events.on('card:add-product', (product: IProduct) => {
     cartModel.addProductToCart(product);
-    events.emit('cart-counter:changed');
-    events.emit('card:select', product);
+    header.counter = cartModel.getTotalCartProducts();
 })
 
 events.on('card:remove-product', (product: IProduct) => {
     cartModel.removeProductFromCart(product);
-    events.emit('cart-counter:changed');
-    events.emit('card:select', product);
-    modal.close();
+    header.counter = cartModel.getTotalCartProducts();
 })
 
 events.on('cart-counter:changed', () => {
@@ -121,8 +102,7 @@ events.on('cart:open', () => {
 
 events.on('cart:order', () => {
     const order = new FormOrder(cloneTemplate(formOrderTemplate), {
-        onSubmit: (event) => {
-            event.preventDefault();
+        onSubmit: () => {;
             const orderDetails = order.orderData;
             buyerModel.setBuyerData({
                 payment: orderDetails.payment,
@@ -148,8 +128,7 @@ events.on('cart:order', () => {
 
 events.on('cart:contacts', () => {
     const contacts = new FormContacts(cloneTemplate(formContactsTemplate), {
-        onSubmit: (event) => {
-            event.preventDefault();
+        onSubmit: () => {
             const contactsDetails = contacts.contactsData;
             buyerModel.setBuyerData({
                 email: contactsDetails.email,
