@@ -20,7 +20,7 @@ import { Success } from './components/Views/Success';
 
 const events = new EventEmitter();
 
-const catalogModel = new Catalog();
+const catalogModel = new Catalog(events);
 const cartModel = new Cart();
 const buyerModel = new Buyer();
 
@@ -174,6 +174,5 @@ apiCommunication.getCatalog()
     )))
     .then(productsWithImages => {
         catalogModel.setProducts(productsWithImages);
-        events.emit('catalog:changed');
     })
     .catch(error => console.error('Ошибка загрузки каталога', error));
