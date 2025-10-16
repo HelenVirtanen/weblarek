@@ -48,26 +48,9 @@ events.on('catalog:changed', () => {
 events.on('card:select', (product: IProduct) => {
     catalogModel.setSelectedProduct(product.id);
     const productInCart = cartModel.isProductInCart(product.id);
+    const card = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
     
-    const card = new CardPreview(cloneTemplate(cardPreviewTemplate), {
-        onClick: () => {
-            if (productInCart) {
-                events.emit('card:remove-product', product);
-            } else {
-                events.emit('card:add-product', product);
-            }
-        },
-    });
-
-    if (product.price === null) { 
-        card.buttonText = 'Недоступно'; 
-        card.buttonDisabled = true; 
-    } else { 
-        card.buttonText = productInCart ? 'Удалить из корзины' : 'Купить'; 
-        card.buttonDisabled = false; 
-    }
-
-    modal.render({ content: card.render(product) });
+    modal.render({ content: card.render(product, productInCart) });
     modal.open(); 
 })
 
