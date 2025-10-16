@@ -1,6 +1,6 @@
 import { Component } from '../base/Component';
 import { ensureElement } from '../../utils/utils';
-import { IBasketOrderActions } from '../../types';
+import { IEvents } from '../base/Events';
 
 interface BasketData {
     products: HTMLElement[];
@@ -13,7 +13,7 @@ export class Basket extends Component<BasketData> {
     protected basketButton: HTMLButtonElement;
     protected basketPrice: HTMLElement;
 
-    constructor(container: HTMLElement, actions?: IBasketOrderActions) {
+    constructor(container: HTMLElement, protected events?: IEvents) {
         super(container);
 
         this.basketTitle = ensureElement<HTMLElement>('.modal__title', this.container);
@@ -21,9 +21,9 @@ export class Basket extends Component<BasketData> {
         this.basketButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
         this.basketPrice = ensureElement<HTMLElement>('.basket__price', this.container);
 
-        if (actions?.onBuy) {
-            this.basketButton.addEventListener('click', actions.onBuy);
-        };
+        this.basketButton.addEventListener('click', () => {
+            this.events?.emit('cart:order');
+        });
     };
 
     set buttonText(value: string) {

@@ -70,21 +70,12 @@ events.on('cart-counter:changed', () => {
 });
 
 events.on('cart:open', () => {
-    const basket = new Basket(cloneTemplate(basketTemplate), {
-        onBuy: () => {
-            events.emit('cart:order');
-        },
-    });
+    const basket = new Basket(cloneTemplate(basketTemplate), events); 
 
     const basketList = cartModel.getCartProducts();
 
     const basketItems = basketList.map((item, index) => {
-        const basketProduct = new CardBasket(cloneTemplate(cardBasketTemplate), {
-            onRemove: () => {
-                events.emit('card:remove-product', item);
-                events.emit('cart:open');
-            }
-        })
+        const basketProduct = new CardBasket(cloneTemplate(cardBasketTemplate), events);
 
         basketProduct.index = index + 1;
         basketProduct.title = item.title;
@@ -171,6 +162,7 @@ events.on('cart:success', () => {
         onOrdered: () => {
             modal.close();
             cartModel.clearCart();
+            header.counter = cartModel.getTotalCartProducts();
             buyerModel.clearBuyerData();
         }
     })

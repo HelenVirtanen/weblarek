@@ -35,9 +35,6 @@ export interface IOrderResult {
 export interface IBasketRemoveActions {
     onRemove?: (event: MouseEvent) => void;
 }
-export interface IBasketOrderActions {
-    onBuy?: (event: MouseEvent) => void;
-}
 export interface IFormActions {
     onSubmit?: (event: SubmitEvent) => void;
 }
