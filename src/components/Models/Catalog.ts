@@ -16,7 +16,7 @@ export class Catalog {
   };
 
   getProductById(id: string): IProduct | undefined {
-    return this.productsList.filter(product => product.id === id)[0];
+    return this.productsList.find(product => product.id === id);
   }
   
   setSelectedProduct(id: string): void {

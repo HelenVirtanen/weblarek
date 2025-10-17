@@ -26,6 +26,12 @@ export class Modal extends Component<ModalContent> {
                 this.close();
             }
         });
+
+        document.addEventListener('keydown', (event) => {
+            if (this.isOpen && (event.key === 'Escape' || event.key === 'Enter')) {
+                this.close();
+            }
+        });
     };
 
     set content(elem: HTMLElement) {

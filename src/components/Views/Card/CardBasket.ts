@@ -15,10 +15,8 @@ export class CardBasket extends Card<ICard> {
         this.cardDeleteItem = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
 
         this.cardDeleteItem.addEventListener('click', () => {
-            if (this.data) {
-                this.events?.emit('card:remove-product', this.data);
-                this.events?.emit('cart:open');
-            }
+            this.events?.emit('card:remove-product', { id: this.id});
+            this.events?.emit('cart:open');
         });
     };
 
@@ -27,7 +25,7 @@ export class CardBasket extends Card<ICard> {
     };
 
     render(data: IProduct) {
-        this.data = data;
+        this.id = data.id;
         return super.render(data);
     }
 };

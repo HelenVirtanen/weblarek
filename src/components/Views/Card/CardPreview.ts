@@ -21,18 +21,18 @@ export class CardPreview extends Card<ICard> {
         this.cardButton = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
         this.cardButton.addEventListener('click', () => {
-            if (!this.data) return;
+            if (!this.id) return;
 
             this.inCart = !this.inCart;
             this.cardButton.textContent = this.inCart ? 'Удалить из корзины' : 'Купить';
             
             const eventInCart = this.inCart ? 'card:add-product' : 'card:remove-product';
-            this.events.emit(eventInCart, this.data);
+            this.events.emit(eventInCart, {id: this.id});
         });
     }
 
     render(data: IProduct, inCart = false): HTMLElement {
-        this.data = data;
+        this.id = data.id;
         this.inCart = inCart;
         this.title = data.title;
         this.price = data.price;

@@ -9,7 +9,7 @@ import { ensureElement, cloneTemplate } from './utils/utils';
 import { Gallery } from './components/Views/Gallery';
 import { Header } from './components/Views/Header';
 import { CardCatalog } from './components/Views/Card/CardCatalog';
-import { IOrderRequest, IProduct } from './types';
+import { IOrderRequest } from './types';
 import { CardPreview } from './components/Views/Card/CardPreview';
 import { Modal } from './components/Views/Modal';
 import { Basket } from './components/Views/Basket';
@@ -46,21 +46,27 @@ events.on('catalog:changed', () => {
     gallery.render({ catalog: itemCards })
 });
 
-events.on('card:select', (product: IProduct) => {
-    catalogModel.setSelectedProduct(product.id);
-    const productInCart = cartModel.isProductInCart(product.id);
+events.on('card:select', (event: {id: string}) => {
+    catalogModel.setSelectedProduct(event.id);
+    const product = catalogModel.getProductById(event.id);
+    if (!product) return;
+    const productInCart = cartModel.isProductInCart(event.id);
     const card = new CardPreview(cloneTemplate(cardPreviewTemplate), events);
     
     modal.render({ content: card.render(product, productInCart) });
     modal.open(); 
 })
 
-events.on('card:add-product', (product: IProduct) => {
+events.on('card:add-product', (event: {id: string}) => {
+    const product = catalogModel.getProductById(event.id);
+    if (!product) return;
     cartModel.addProductToCart(product);
     header.counter = cartModel.getTotalCartProducts();
 })
 
-events.on('card:remove-product', (product: IProduct) => {
+events.on('card:remove-product', (event: {id: string}) => {
+    const product = catalogModel.getProductById(event.id);
+    if (!product) return;
     cartModel.removeProductFromCart(product);
     header.counter = cartModel.getTotalCartProducts();
 })
@@ -93,6 +99,11 @@ events.on('cart:open', () => {
 
 events.on('cart:order', () => {
     const order = new FormOrder(cloneTemplate(formOrderTemplate), {
+        onAddressInput: (address) => {
+            buyerModel.setBuyerData({ address });
+            const errors = buyerModel.sumAddressErrors();
+            order.isAddressValid(errors);
+        },
         onSubmit: () => {;
             const orderDetails = order.orderData;
             buyerModel.setBuyerData({
@@ -102,7 +113,6 @@ events.on('cart:order', () => {
         },
 
         onPaymentSelect: (payment) => buyerModel.setBuyerData({ payment }),
-        onAddressInput: (address) => buyerModel.setBuyerData({ address }),
         }, 
         events
     );
@@ -116,7 +126,17 @@ events.on('cart:order', () => {
 
 events.on('cart:contacts', () => {
     const contacts = new FormContacts(cloneTemplate(formContactsTemplate), {
-        onSubmit: () => {
+        onEmailInput: (email) => {
+            buyerModel.setBuyerData({ email });
+            const errors = buyerModel.sumContactsErrors();
+            contacts.isContactsValid(errors);
+        },
+        onPhoneInput: (phone) => {
+            buyerModel.setBuyerData({ phone });
+            const errors = buyerModel.sumContactsErrors();
+            contacts.isContactsValid(errors);
+        },
+        onSubmit: async () => {
             const contactsDetails = contacts.contactsData;
             buyerModel.setBuyerData({
                 email: contactsDetails.email,
@@ -132,19 +152,14 @@ events.on('cart:contacts', () => {
                 items: cartModel.getCartProducts().map(p => p.id),
             };
 
+            
+
             try {
-                const result = apiCommunication.createOrder(orderData);
+                const result = await apiCommunication.createOrder(orderData);
                 events.emit('cart:success', result);
             } catch (err) {
                 console.error(err);
             }
-        },
-
-        onEmailInput: (email) => {
-            buyerModel.setBuyerData({ email });
-        },
-        onPhoneInput: (phone) => {
-            buyerModel.setBuyerData({ phone });
         },
     });
 
@@ -152,20 +167,23 @@ events.on('cart:contacts', () => {
     modal.open();
 })
 
-events.on('cart:success', () => {
+function cleanupAfterSuccess() {
+    cartModel.clearCart();
+    header.counter = cartModel.getTotalCartProducts();
+    buyerModel.clearBuyerData();
+}
+
+events.on('cart:success', (result: { total: number }) => {
     const success = new Success(cloneTemplate(successTemplate), {
         onOrdered: () => {
             modal.close();
-            cartModel.clearCart();
-            header.counter = cartModel.getTotalCartProducts();
-            buyerModel.clearBuyerData();
         }
     });
 
-    success.total = cartModel.getTotalCartPrice();
-    
+    success.total = result.total;
     modal.render({ content: success.render() });
     modal.open();
+    cleanupAfterSuccess();
 })
 
 apiCommunication.getCatalog()

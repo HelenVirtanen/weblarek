@@ -39,7 +39,6 @@ export class FormOrder extends Form {
             if (actions?.onAddressInput) {
                 actions.onAddressInput(this.addressInput.value);
             };
-            this.isAddressValid();
         });
 
         this.submitButton.addEventListener('click', () => {
@@ -73,13 +72,8 @@ export class FormOrder extends Form {
         return this.addressInput.value;
     };
 
-    isAddressValid(): void {
-        const error: {[key: string]: string} = {};
-        if (!this.addressInput.value || this.addressInput.value.trim() === '') {
-            error.address = 'Необходимо указать адрес';
-        }
-        
-        this.checkErrors(error);
+    isAddressValid(errors?: {[key: string]: string}): void {
+        this.checkErrors(errors || {});
     }
 
     get orderData(): IOrderData {
